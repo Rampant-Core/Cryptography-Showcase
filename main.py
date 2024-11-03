@@ -44,13 +44,11 @@ class locker_404:
         tab2 = tk.Frame(tabControl)
         tab3 = tk.Frame(tabControl)
         tab4 = tk.Frame(tabControl)
-        tab8 = tk.Frame(tabControl)
         # Sets the name of the tab
         tabControl.add(tab1, text="Main")
         tabControl.add(tab2, text="Key Gen")
         tabControl.add(tab3, text="Encrypt")
         tabControl.add(tab4, text="Decrypt")
-        tabControl.add(tab8, text="About")
         """
         Tab 1 Begins here
         """

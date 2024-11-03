@@ -1,0 +1,4 @@
+ttkboostrap
+tkinter
+PIL
+cryptography
