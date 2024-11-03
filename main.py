@@ -441,11 +441,17 @@ class locker_404:
     def start_encrypt(self, file_name, key_dir):
         if file_name and key_dir:
             encryptor.encrypt_file(file_name, key_dir)
+            self.selected_key.config(text="No Key selected")
+            self.file_selected.config(text="No file selected")
 
     # Calls the encrypt function outside of init
     def start_decrypt(self, file_name, key_dir):
         if file_name and key_dir:
-            encryptor.decrypt_file(file_name, key_dir)
+            try:
+                encryptor.decrypt_file(file_name, key_dir)
+                self.file_to_decrypt.config(text="No file selected")
+            except TypeError as e:
+                print(f"error occured{e}")
 
 
 root = tk.Window(iconphoto="CS404.png", themename="darkly")  # This is the main window
