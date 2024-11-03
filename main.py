@@ -8,10 +8,10 @@ encryptor = locker.Cs404_locker()  # Calls an instance of the 404 locker class
 """
 TODO change variables for key system path
 TODO fix opening of decryption key
-TODO fix display of file path in tab 4
 TODO add Caesar Cypher tab
 TODO add Cypher scrambler tab for text files
 TODO Fix tab 2 to make it prettier
+TODO make labels clear after job is executed
 """
 
 
@@ -210,7 +210,10 @@ class locker_404:
 
         # Button for selecting filepath
         open_key_button = tk.Button(
-            decryption_frame, text="Select a Key", command=self.open_key, style="danger"
+            decryption_frame,
+            text="Select a Key",
+            command=self.decrypt_open_key,
+            style="danger",
         )
         open_key_button.grid(
             column=1, row=1, padx=10, pady=10, columnspan=2, sticky="nsew"
@@ -232,7 +235,7 @@ class locker_404:
         decrypt_open_encrypt_file = tk.Button(
             decryption_frame,
             text="Select a file",
-            command=self.open_file,
+            command=self.open_file_decrypt,
             style="danger",
         )
         decrypt_open_encrypt_file.grid(
@@ -240,15 +243,15 @@ class locker_404:
         )
 
         # Frame for label filepath key
-        decrypt_selected_file_label_frame = tk.Frame(
+        self.decrypt_selected_file_label_frame = tk.Frame(
             decryption_frame, width=80, height=70, borderwidth=2, relief="sunken"
         )
-        decrypt_selected_file_label_frame.grid(
+        self.decrypt_selected_file_label_frame.grid(
             row=3, column=3, padx=10, pady=10, sticky="nsew"
         )
         # Label to show file to be decrypted
         self.decrypt_file_selected = tk.Label(
-            decrypt_selected_file_label_frame, text=self.file_to_decrypt, width=70
+            self.decrypt_selected_file_label_frame, text=self.file_to_decrypt, width=70
         )
         self.decrypt_file_selected.grid(column=4, row=4, sticky="nsew")
         # Create the checkbox
@@ -342,6 +345,8 @@ class locker_404:
                     f"File at {self.file_to_encrypt} has been encrypted with key at {self.decrypt_key_filepath}.",
                     alert=True,
                 )
+                self.decrypt_key_filepath = None
+                self.file_to_encrypt = None
                 # If checkbox is not marked
             else:
                 Messagebox.show_error(
@@ -371,6 +376,8 @@ class locker_404:
                     f"File at {self.file_to_decrypt} has been decrypted with key at {self.decrypt_key_filepath}.",
                     alert=True,
                 )
+                self.decrypt_key_filepath = None
+                self.file_to_decrypt = None
                 # If checkbox is not marked
             else:
                 Messagebox.show_error(
@@ -407,6 +414,10 @@ class locker_404:
             self.file_to_encrypt = file_selection
             self.file_selected.config(text=file_selection)
 
+    """
+    Decryption defs
+    """
+
     # This will be used to load a key in for decryption
     def decrypt_open_key(self):
         key_file_path_selection = filedialog.askopenfilename(
@@ -415,7 +426,7 @@ class locker_404:
         )
         if key_file_path_selection:
             self.decrypt_key_filepath = key_file_path_selection
-            self.selected_key.config(text=key_file_path_selection)
+            self.decryption_selected_key.config(text=key_file_path_selection)
 
     # This will be used select a file for decryption
     def open_file_decrypt(self):
@@ -428,11 +439,13 @@ class locker_404:
 
     # Calls the encrypt function outside of init
     def start_encrypt(self, file_name, key_dir):
-        encryptor.encrypt_file(file_name, key_dir)
+        if file_name and key_dir:
+            encryptor.encrypt_file(file_name, key_dir)
 
     # Calls the encrypt function outside of init
     def start_decrypt(self, file_name, key_dir):
-        encryptor.decrypt_file(file_name, key_dir)
+        if file_name and key_dir:
+            encryptor.decrypt_file(file_name, key_dir)
 
 
 root = tk.Window(iconphoto="CS404.png", themename="darkly")  # This is the main window
