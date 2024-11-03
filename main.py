@@ -81,12 +81,13 @@ class locker_404:
         # Label for tab 2 desc
         tk.Label(
             tab2,
-            text="Select a folder to generate a key and set the name you would like",
-        ).grid(column=0, row=0, padx=30, pady=30)
+            text="Select a folder to generate a key and set the name you would like",font="Helvetica, 18"
+        ).grid(column=0, row=0, columnspan=3,sticky="nse")
+        # Key generation button
         key_creation = tk.Button(
             tab2, text="Generate a Key", command=self.make_key, style="danger"
         )
-        key_creation.grid(column=1, row=0)
+        key_creation.grid(column=1, row=3,sticky="nswe")
         # Button for selecting filepath
         open_button = tk.Button(
             tab2,
@@ -94,10 +95,10 @@ class locker_404:
             command=self.open_file_dialog,
             style="danger",
         )
-        open_button.grid(column=2, row=0)
+        open_button.grid(column=0, row=2)
         # Entry for Filename
         self.filename_entry = tk.Entry(tab2, style="danger")
-        self.filename_entry.grid(column=1, row=1)
+        self.filename_entry.grid(column=1, row=2)
         self.filename_entry.insert(0, "")
         """
         Here is the part where the files are encrypted
