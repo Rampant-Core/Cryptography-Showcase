@@ -43,7 +43,7 @@ class locker_404:
             tab1,
             text="This is a demo of how cryptography works created for the CS404 club",
             font=("Helvetica", 18),
-        ).grid(column=0, row=0, padx=30, pady=30, sticky="nsew")
+        ).grid(column=0, row=0, padx=30, pady=30)
         # Tab 1 Frame
         tab_frame_1 = tk.Frame(tab1, width=60, height=90, borderwidth=2)
         tab_frame_1.grid(row=0, column=0)
@@ -51,7 +51,7 @@ class locker_404:
         text_frame_1 = tk.Text(
             tab_frame_1, wrap="word", width=60, height=60, font="Helvetica, 18"
         )
-        text_frame_1.grid(row=0, column=1)
+        text_frame_1.grid(row=1, column=0)
         # Tab 1 Text fram contents
         tab_info_1 = "This is an application created to show how encryption works on files in a system. Created only for educational purposes for the CS404 Club.Be aware improper use of this tool may lead to data loss or worse, use at your own risk on files that are important. This should not be used to keep files safe."
         text_frame_1.insert("1.0", tab_info_1)
@@ -61,7 +61,7 @@ class locker_404:
         image = image.resize((159, 211), Image.LANCZOS)
         photo = ImageTk.PhotoImage(image)
         image_label = tk.Label(tab_frame_1, image=photo)
-        image_label.grid(row=0, column=0, sticky="nsew")
+        image_label.grid(row=0, column=0)
         image_label.image = photo
         """
         Key generation tab
@@ -134,10 +134,6 @@ class locker_404:
             column=1, row=3, padx=10, pady=10, columnspan=2, sticky="nsew"
         )
 
-        # Checkbox state remove after def is created
-        def show_state():
-            self.checkbox_var.get()
-
         # Frame for label filepath key
         selected_file_label_frame = tk.Frame(
             encryption_frame, width=80, height=70, borderwidth=2, relief="sunken"
@@ -153,13 +149,16 @@ class locker_404:
             encryption_frame,
             text="I agree",
             variable=self.checkbox_var,
-            command=show_state,
+            command=self.checkbox_var.get(),
         )
         checkbox.grid(column=2, row=4, padx=10, pady=10, sticky="nsew")
 
         # Button for starting encryption
         call_encrypt = tk.Button(
-            encryption_frame, text="Encrypt", command=None, style="danger"
+            encryption_frame,
+            text="Encrypt",
+            command=self.encrypt,
+            style="danger",
         )
         call_encrypt.grid(
             column=3, row=4, padx=10, pady=10, columnspan=2, sticky="nsew"
@@ -175,7 +174,7 @@ class locker_404:
             encryption_frame, wrap="word", width=60, height=60, font="Helvetica, 18"
         )
         text_frame_3.grid(row=6, column=1, columnspan=3, sticky="nsew")
-        # Tab 1 Text fram contents
+        # Tab 3 Text frame contents
         tab_info_3 = "This uses a 32 bit AES-128 key created by the previous tab to convert a file into cyphertext making it unreadable, any file this program encrypts has their extension automatically changed to .404 Not recommended to be used on important files, this is just a demonstration of how symmetric key encryption works. Use on important data at your own risk."
         text_frame_3.insert("1.0", tab_info_3)
         text_frame_3.config(state="disabled")
@@ -188,16 +187,19 @@ class locker_404:
             Messagebox.show_error(
                 "Please select a folder and enter a name for the key",
                 title="Error no folder & name",
+                alert=True,
             )
             return
         if self.key_name is None or self.key_name == "":
             Messagebox.show_error(
-                "Please enter a name for the key", title="No name Error"
+                "Please enter a name for the key", title="No name Error", alert=True
             )
             return
         if self.key_filepath is None:
             Messagebox.show_error(
-                "Please select a folder to save the key in", title="No folder Error"
+                "Please select a folder to save the key in",
+                title="No folder Error",
+                alert=True,
             )
             return
         if self.key_filepath and self.key_name is not None:
@@ -206,6 +208,31 @@ class locker_404:
                 f"A key {self.key_name} Has been created at {self.key_filepath}.404key",
                 title="Key Creation successful",
             )
+
+    # This is the def to encrypt a file using a previously generated key
+    def encrypt(self):
+        if self.file_to_encrypt is None:
+            Messagebox.show_error(
+                "Please select a file to encrypt", title="No file Error", alert=True
+            )
+            return
+        if self.decrypt_key_filepath is None:
+            Messagebox.show_error(
+                "Please select a decryption key", title="No key Error", alert=True
+            )
+            return
+        if self.decrypt_key_filepath is not None and self.file_to_encrypt is not None:
+            if self.checkbox_var.get():
+                self.start_encrypt(self.file_to_encrypt, self.decrypt_key_filepath)
+                Messagebox.show_info(
+                    f"File at {self.file_to_encrypt} has been encrypted with key at {self.decrypt_key_filepath}.",
+                    alert=True,
+                )
+            else:
+                Messagebox.show_error(
+                    "Please check the checkbox", title="No checkbox error", alert=True
+                )
+                return
 
     """
     Functions from here down
@@ -235,6 +262,10 @@ class locker_404:
         if file_selection:
             self.file_to_encrypt = file_selection
             self.file_selected.config(text=file_selection)
+
+    # Calls the encrypt function outside of init
+    def start_encrypt(self, file_name, key_dir):
+        encryptor.encrypt_file(file_name, key_dir)
 
 
 root = tk.Window(iconphoto="CS404.png", themename="darkly")  # This is the main window
