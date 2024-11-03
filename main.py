@@ -6,8 +6,6 @@ from PIL import Image, ImageTk
 
 encryptor = locker.Cs404_locker()  # Calls an instance of the 404 locker class
 """
-TODO change variables for key system path
-TODO fix opening of decryption key
 TODO add Caesar Cypher tab
 TODO add Cypher scrambler tab for text files
 TODO Fix tab 2 to make it prettier
@@ -267,7 +265,7 @@ class locker_404:
         call_decrypt = tk.Button(
             decryption_frame,
             text="Decrypt",
-            command=None,
+            command=self.decrypt,
             style="danger",
         )
         call_decrypt.grid(
@@ -320,7 +318,7 @@ class locker_404:
             )
 
     """
-    Encryption / Decryption Functions
+    Encryption Function
     """
 
     # This is the def to encrypt a file using a previously generated key
@@ -357,6 +355,9 @@ class locker_404:
         except TypeError:
             print('Not Working')
 
+    """
+    Decryption function
+    """
     # This is the def to encrypt a file using a previously generated key
     def decrypt(self):
         # If there is no file selected
@@ -455,7 +456,7 @@ class locker_404:
         if file_name and key_dir:
             try:
                 encryptor.decrypt_file(file_name, key_dir)
-                self.file_to_decrypt.config(text="No file selected")
+                self.decrypt_file_selected.config(text="No file selected")
             except TypeError as e:
                 print(f"error occured{e}")
 

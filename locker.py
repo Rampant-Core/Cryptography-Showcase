@@ -49,7 +49,7 @@ class Cs404_locker:
             file_name = None
             self.key = None
         else:
-            raise TypeError("Encryption key must be in bytes format.")
+            raise TypeError("Error, Encryption key must be in bytes format.")
 
     # Decrypts a file with a key
     def decrypt_file(self, file_name, encrypt_key):
@@ -69,3 +69,8 @@ class Cs404_locker:
                 file.write(decrypted_data)
                 file.close()
                 os.rename(file_name, os.path.splitext(file_name)[0])
+                key_file = None
+                file_name = None
+                self.key = None
+        else:
+            raise TypeError("Error, Decrypt Key Missing.")
