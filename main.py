@@ -44,11 +44,16 @@ class locker_404:
         tab2 = tk.Frame(tabControl)
         tab3 = tk.Frame(tabControl)
         tab4 = tk.Frame(tabControl)
+        tab8 = tk.Frame(tabControl)
         # Sets the name of the tab
         tabControl.add(tab1, text="Main")
         tabControl.add(tab2, text="Key Gen")
         tabControl.add(tab3, text="Encrypt")
         tabControl.add(tab4, text="Decrypt")
+        tabControl.add(tab8, text="About")
+        """
+        Tab 1 Begins here
+        """
         # Places the tab in the root frame with grid
         tabControl.pack(expand=1, fill="both")
         tk.Label(
@@ -76,7 +81,7 @@ class locker_404:
         image_label.grid(row=0, column=0)
         image_label.image = photo
         """
-        Key generation tab
+        Tab 2 Key generation
         """
         # Label for tab 2 desc
         tk.Label(
@@ -134,7 +139,7 @@ class locker_404:
         text_frame_2.insert("1.0", tab_info_2)
         text_frame_2.config(state="disabled")
         """
-        Here is the part where the files are encrypted
+        Tab 3 encryption
         """
         # Tab 3 Encryption
         encryption_frame = tk.Frame(tab3, width=80, height=90, borderwidth=2)
@@ -225,7 +230,7 @@ class locker_404:
         text_frame_3.insert("1.0", tab_info_3)
         text_frame_3.config(state="disabled")
         """
-        Here is tab 4 Decryption
+        Tab 4 Decryption
         """
         # Tab 4 Decryption
         decryption_frame = tk.Frame(tab4, width=80, height=90, borderwidth=2)
@@ -321,6 +326,10 @@ class locker_404:
         text_frame_4.insert("1.0", tab_info_4)
         text_frame_4.config(state="disabled")
 
+    """
+    Key make function
+    """
+
     # def for button to make an encryption key
     # Needs two parameters for input, a filepath to place the key and a name for the key
     def make_key(self):
@@ -350,6 +359,10 @@ class locker_404:
                 f"A key {self.key_name} Has been created at {self.key_filepath}.404key",
                 title="Key Creation successful",
             )
+            self.key_filepath = None
+            self.key_name = None
+            self.key_folder_show.config(text="No folder Selected")
+            self.filename_entry.delete(0, tk.END)
 
     """
     Encryption Function
@@ -432,7 +445,7 @@ class locker_404:
                 return
 
     """
-    Functions from here down
+    File functions
     """
 
     # This is used to open the directory selection dialog and passes the filepath to the next function
