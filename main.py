@@ -5,6 +5,14 @@ import locker
 from PIL import Image, ImageTk
 
 encryptor = locker.Cs404_locker()  # Calls an instance of the 404 locker class
+"""
+TODO change variables for key system path
+TODO fix opening of decryption key
+TODO fix display of file path in tab 4
+TODO add Caesar Cypher tab
+TODO add Cypher scrambler tab for text files
+TODO Fix tab 2 to make it prettier
+"""
 
 
 class locker_404:
@@ -14,13 +22,19 @@ class locker_404:
         root.title("404 Cryptography Demo")
         root.geometry("800x400")
         root.maxsize(800, 400)
-        self.checkbox_var = tk.BooleanVar()
-        self.key_filepath = None
-        self.decrypt_key_filepath = None
-        self.key_name = None
+        self.checkbox_var = (
+            tk.BooleanVar()
+        )  # The value of the checkbox in tab 3 Encryption
+        self.decrypt_checkbox_var = (
+            tk.BooleanVar()
+        )  # Value of checkbox in tab 4 Decryption
+        self.key_filepath = None  # Filepath of key selected
+        self.decrypt_key_filepath = None  # Decrypt key filepath
+        self.key_name = None  # Name of key in tab 2 Key creation
         self.iconphoto = ""
-        self.file_to_encrypt = None
+        self.file_to_encrypt = None  # Selected file to encrypt in tab 3
         self.selected_key_label = None
+        self.file_to_decrypt = None
 
         # Creates the main frame for content
         frame = tk.Frame(root, width=800, height=400, borderwidth=2)
@@ -178,6 +192,99 @@ class locker_404:
         tab_info_3 = "This uses a 32 bit AES-128 key created by the previous tab to convert a file into cyphertext making it unreadable, any file this program encrypts has their extension automatically changed to .404 Not recommended to be used on important files, this is just a demonstration of how symmetric key encryption works. Use on important data at your own risk."
         text_frame_3.insert("1.0", tab_info_3)
         text_frame_3.config(state="disabled")
+        """
+        Here is tab 4 Decryption
+        """
+        # Tab 4 Decryption
+        decryption_frame = tk.Frame(tab4, width=80, height=90, borderwidth=2)
+        decryption_frame.grid(column=0, row=0, sticky="nsew")
+
+        # Title label
+        dacryption_frame_title = tk.Label(
+            decryption_frame,
+            borderwidth=2,
+            text="File decryption with a key",
+            font="Helvetica, 18",
+        )
+        dacryption_frame_title.grid(row=0, column=2, sticky="nsew", columnspan=4)
+
+        # Button for selecting filepath
+        open_key_button = tk.Button(
+            decryption_frame, text="Select a Key", command=self.open_key, style="danger"
+        )
+        open_key_button.grid(
+            column=1, row=1, padx=10, pady=10, columnspan=2, sticky="nsew"
+        )
+
+        # Frame for label filepath key
+        decryption_selected_key_labelframe = tk.Frame(
+            decryption_frame, width=80, height=70, borderwidth=2, relief="sunken"
+        )
+        decryption_selected_key_labelframe.grid(
+            row=1, column=3, padx=10, pady=10, columnspan=2, sticky="nsew"
+        )
+        # Label to show key selected
+        self.decryption_selected_key = tk.Label(
+            decryption_selected_key_labelframe, text=self.file_to_decrypt, width=70
+        )
+        self.decryption_selected_key.grid(column=2, row=2, sticky="nsew")
+        # Button for selecting file to be encrypted
+        decrypt_open_encrypt_file = tk.Button(
+            decryption_frame,
+            text="Select a file",
+            command=self.open_file,
+            style="danger",
+        )
+        decrypt_open_encrypt_file.grid(
+            column=1, row=3, padx=10, pady=10, columnspan=2, sticky="nsew"
+        )
+
+        # Frame for label filepath key
+        decrypt_selected_file_label_frame = tk.Frame(
+            decryption_frame, width=80, height=70, borderwidth=2, relief="sunken"
+        )
+        decrypt_selected_file_label_frame.grid(
+            row=3, column=3, padx=10, pady=10, sticky="nsew"
+        )
+        # Label to show file to be decrypted
+        self.decrypt_file_selected = tk.Label(
+            decrypt_selected_file_label_frame, text=self.file_to_decrypt, width=70
+        )
+        self.decrypt_file_selected.grid(column=4, row=4, sticky="nsew")
+        # Create the checkbox
+        checkbox = tk.Checkbutton(
+            decryption_frame,
+            text="I agree",
+            variable=self.decrypt_checkbox_var,
+            command=self.decrypt_checkbox_var.get(),
+        )
+        checkbox.grid(column=2, row=4, padx=10, pady=10, sticky="nsew")
+
+        # Button for starting encryption
+        call_decrypt = tk.Button(
+            decryption_frame,
+            text="Decrypt",
+            command=None,
+            style="danger",
+        )
+        call_decrypt.grid(
+            column=3, row=4, padx=10, pady=10, columnspan=2, sticky="nsew"
+        )
+        warning = "This file is not important"
+        warning_label = tk.Label(
+            decryption_frame, text=warning, width=30, font="Helvetica, 12"
+        )
+        warning_label.grid(column=1, row=4, sticky="nse")
+
+        # Tab 4 text frame
+        text_frame_4 = tk.Text(
+            decryption_frame, wrap="word", width=60, height=60, font="Helvetica, 18"
+        )
+        text_frame_4.grid(row=6, column=1, columnspan=3, sticky="nsew")
+        # Tab 4 Text frame contents
+        tab_info_4 = "This uses a 32 bit sha256 key to decrypt a .404 file"
+        text_frame_4.insert("1.0", tab_info_4)
+        text_frame_4.config(state="disabled")
 
     # def for button to make an encryption key
     # Needs two parameters for input, a filepath to place the key and a name for the key
@@ -209,18 +316,25 @@ class locker_404:
                 title="Key Creation successful",
             )
 
+    """
+    Encryption / Decryption Functions
+    """
+
     # This is the def to encrypt a file using a previously generated key
     def encrypt(self):
+        # If there is no file selected
         if self.file_to_encrypt is None:
             Messagebox.show_error(
                 "Please select a file to encrypt", title="No file Error", alert=True
             )
             return
+        # If no key is selected
         if self.decrypt_key_filepath is None:
             Messagebox.show_error(
                 "Please select a decryption key", title="No key Error", alert=True
             )
             return
+        # If both are present
         if self.decrypt_key_filepath is not None and self.file_to_encrypt is not None:
             if self.checkbox_var.get():
                 self.start_encrypt(self.file_to_encrypt, self.decrypt_key_filepath)
@@ -228,6 +342,36 @@ class locker_404:
                     f"File at {self.file_to_encrypt} has been encrypted with key at {self.decrypt_key_filepath}.",
                     alert=True,
                 )
+                # If checkbox is not marked
+            else:
+                Messagebox.show_error(
+                    "Please check the checkbox", title="No checkbox error", alert=True
+                )
+                return
+
+    # This is the def to encrypt a file using a previously generated key
+    def decrypt(self):
+        # If there is no file selected
+        if self.file_to_decrypt is None:
+            Messagebox.show_error(
+                "Please select a file to decrypt", title="No file Error", alert=True
+            )
+            return
+        # If no key is selected
+        if self.decrypt_key_filepath is None:
+            Messagebox.show_error(
+                "Please select a decryption key", title="No key Error", alert=True
+            )
+            return
+        # If both are present
+        if self.decrypt_key_filepath is not None and self.file_to_decrypt is not None:
+            if self.decrypt_checkbox_var.get():
+                self.start_decrypt(self.file_to_decrypt, self.decrypt_key_filepath)
+                Messagebox.show_info(
+                    f"File at {self.file_to_decrypt} has been decrypted with key at {self.decrypt_key_filepath}.",
+                    alert=True,
+                )
+                # If checkbox is not marked
             else:
                 Messagebox.show_error(
                     "Please check the checkbox", title="No checkbox error", alert=True
@@ -244,7 +388,7 @@ class locker_404:
         if directory_path:
             self.key_filepath = directory_path
 
-    # This will be used to load a key in for encryption/decryption
+    # This will be used to load a key in for encryption
     def open_key(self):
         key_file_path_selection = filedialog.askopenfilename(
             title="Select a Key file with .404 extension",
@@ -263,9 +407,32 @@ class locker_404:
             self.file_to_encrypt = file_selection
             self.file_selected.config(text=file_selection)
 
+    # This will be used to load a key in for decryption
+    def decrypt_open_key(self):
+        key_file_path_selection = filedialog.askopenfilename(
+            title="Select a Key file with .404 extension",
+            filetypes=[("404 Key Files", "*.404key"), ("All files", "*.*")],
+        )
+        if key_file_path_selection:
+            self.decrypt_key_filepath = key_file_path_selection
+            self.selected_key.config(text=key_file_path_selection)
+
+    # This will be used select a file for decryption
+    def open_file_decrypt(self):
+        file_selection = filedialog.askopenfilename(
+            title="Select a file to encrypt", filetypes=[("All files", "*.*")]
+        )
+        if file_selection:
+            self.file_to_decrypt = file_selection
+            self.decrypt_file_selected.config(text=file_selection)
+
     # Calls the encrypt function outside of init
     def start_encrypt(self, file_name, key_dir):
         encryptor.encrypt_file(file_name, key_dir)
+
+    # Calls the encrypt function outside of init
+    def start_decrypt(self, file_name, key_dir):
+        encryptor.decrypt_file(file_name, key_dir)
 
 
 root = tk.Window(iconphoto="CS404.png", themename="darkly")  # This is the main window
