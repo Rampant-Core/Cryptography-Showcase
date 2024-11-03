@@ -81,13 +81,15 @@ class locker_404:
         # Label for tab 2 desc
         tk.Label(
             tab2,
-            text="Select a folder to generate a key and set the name you would like",font="Helvetica, 18"
-        ).grid(column=0, row=0, columnspan=3,sticky="nse")
+            text="Select a folder for the key and set a name",
+            font="Helvetica, 18",
+            borderwidth=2,
+        ).grid(column=0, row=0, columnspan=3, sticky="nswe", padx=10, pady=10)
         # Key generation button
         key_creation = tk.Button(
             tab2, text="Generate a Key", command=self.make_key, style="danger"
         )
-        key_creation.grid(column=1, row=3,sticky="nswe")
+        key_creation.grid(column=1, row=4, sticky="nswe", padx=10, pady=10)
         # Button for selecting filepath
         open_button = tk.Button(
             tab2,
@@ -95,11 +97,42 @@ class locker_404:
             command=self.open_file_dialog,
             style="danger",
         )
-        open_button.grid(column=0, row=2)
+        open_button.grid(column=0, row=2, padx=10, pady=10, sticky="nsew")
+        # Filename entry label
+        tk.Label(
+            tab2,
+            text="Name the key:",
+            font="Helvetica, 18",
+            borderwidth=2,
+        ).grid(column=0, row=3, columnspan=2, sticky="nswe", padx=10, pady=10)
         # Entry for Filename
         self.filename_entry = tk.Entry(tab2, style="danger")
-        self.filename_entry.grid(column=1, row=2)
+        self.filename_entry.grid(column=1, row=3, padx=10, pady=10, sticky="nsew")
         self.filename_entry.insert(0, "")
+
+        # Tab 2 text frame
+        text_frame_2 = tk.Text(
+            tab2, wrap="word", width=60, height=60, font="Helvetica, 18"
+        )
+        text_frame_2.grid(
+            row=6, column=0, columnspan=3, sticky="nsew", padx=10, pady=10
+        )
+
+        # Frame for label filepath key
+        self.key_folder = tk.Frame(
+            tab2, width=80, height=70, borderwidth=2, relief="sunken"
+        )
+        self.key_folder.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
+        # Label to show file to be decrypted
+        self.key_folder_show = tk.Label(
+            self.key_folder, text=self.key_filepath, width=70
+        )
+        self.key_folder_show.grid(column=0, row=2, sticky="nsew")
+
+        # Tab 2 Text frame contents
+        tab_info_2 = "This creates a 32 bit AES-128 key, it is used in the other tabs with an algorythm to encrypt data into cypertext. It is important to keep this file as you will NOT be able to unencrypt a file if you lose this key. So keep this in a safe place if you want to unencrypt the data you encrypted."
+        text_frame_2.insert("1.0", tab_info_2)
+        text_frame_2.config(state="disabled")
         """
         Here is the part where the files are encrypted
         """
@@ -284,7 +317,7 @@ class locker_404:
         )
         text_frame_4.grid(row=6, column=1, columnspan=3, sticky="nsew")
         # Tab 4 Text frame contents
-        tab_info_4 = "This uses a 32 bit sha256 key to decrypt a .404 file"
+        tab_info_4 = "This uses a 32 bit AES-128 key created in the second tab to decrypt files from cyphertext. It will only work with files created with this program."
         text_frame_4.insert("1.0", tab_info_4)
         text_frame_4.config(state="disabled")
 
@@ -338,7 +371,10 @@ class locker_404:
                 )
                 return
             # If both are present
-            if self.decrypt_key_filepath is not None and self.file_to_encrypt is not None:
+            if (
+                self.decrypt_key_filepath is not None
+                and self.file_to_encrypt is not None
+            ):
                 if self.checkbox_var.get():
                     self.start_encrypt(self.file_to_encrypt, self.decrypt_key_filepath)
                     Messagebox.show_info(
@@ -347,18 +383,22 @@ class locker_404:
                     )
                     self.decrypt_key_filepath = None
                     self.file_to_encrypt = None
+                    self.checkbox_var.set(False)
                     # If checkbox is not marked
                 else:
                     Messagebox.show_error(
-                        "Please check the checkbox", title="No checkbox error", alert=True
+                        "Please check the checkbox",
+                        title="No checkbox error",
+                        alert=True,
                     )
                     return
         except TypeError:
-            print('Not Working')
+            print("Not Working")
 
     """
     Decryption function
     """
+
     # This is the def to encrypt a file using a previously generated key
     def decrypt(self):
         # If there is no file selected
@@ -383,6 +423,7 @@ class locker_404:
                 )
                 self.decrypt_key_filepath = None
                 self.file_to_decrypt = None
+                self.decrypt_checkbox_var.set(False)
                 # If checkbox is not marked
             else:
                 Messagebox.show_error(
@@ -399,6 +440,7 @@ class locker_404:
         directory_path = filedialog.askdirectory(title="Select a Directory")
         if directory_path:
             self.key_filepath = directory_path
+            self.key_folder_show.config(text=self.key_filepath)
 
     # This will be used to load a key in for encryption
     def open_key(self):
@@ -451,7 +493,8 @@ class locker_404:
                 self.file_selected.config(text="No file selected")
 
         except key_dir is None:
-            print('select a file')
+            print("select a file")
+
     # Calls the decrypt function outside of init
     def start_decrypt(self, file_name, key_dir):
         if file_name and key_dir:
