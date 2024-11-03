@@ -325,34 +325,37 @@ class locker_404:
 
     # This is the def to encrypt a file using a previously generated key
     def encrypt(self):
-        # If there is no file selected
-        if self.file_to_encrypt is None:
-            Messagebox.show_error(
-                "Please select a file to encrypt", title="No file Error", alert=True
-            )
-            return
-        # If no key is selected
-        if self.decrypt_key_filepath is None:
-            Messagebox.show_error(
-                "Please select a decryption key", title="No key Error", alert=True
-            )
-            return
-        # If both are present
-        if self.decrypt_key_filepath is not None and self.file_to_encrypt is not None:
-            if self.checkbox_var.get():
-                self.start_encrypt(self.file_to_encrypt, self.decrypt_key_filepath)
-                Messagebox.show_info(
-                    f"File at {self.file_to_encrypt} has been encrypted with key at {self.decrypt_key_filepath}.",
-                    alert=True,
-                )
-                self.decrypt_key_filepath = None
-                self.file_to_encrypt = None
-                # If checkbox is not marked
-            else:
+        try:
+            # If there is no file selected
+            if self.file_to_encrypt is None:
                 Messagebox.show_error(
-                    "Please check the checkbox", title="No checkbox error", alert=True
+                    "Please select a file to encrypt", title="No file Error", alert=True
                 )
                 return
+            # If no key is selected
+            if self.decrypt_key_filepath is None:
+                Messagebox.show_error(
+                    "Please select a decryption key", title="No key Error", alert=True
+                )
+                return
+            # If both are present
+            if self.decrypt_key_filepath is not None and self.file_to_encrypt is not None:
+                if self.checkbox_var.get():
+                    self.start_encrypt(self.file_to_encrypt, self.decrypt_key_filepath)
+                    Messagebox.show_info(
+                        f"File at {self.file_to_encrypt} has been encrypted with key at {self.decrypt_key_filepath}.",
+                        alert=True,
+                    )
+                    self.decrypt_key_filepath = None
+                    self.file_to_encrypt = None
+                    # If checkbox is not marked
+                else:
+                    Messagebox.show_error(
+                        "Please check the checkbox", title="No checkbox error", alert=True
+                    )
+                    return
+        except TypeError:
+            print('Not Working')
 
     # This is the def to encrypt a file using a previously generated key
     def decrypt(self):
@@ -439,12 +442,15 @@ class locker_404:
 
     # Calls the encrypt function outside of init
     def start_encrypt(self, file_name, key_dir):
-        if file_name and key_dir:
-            encryptor.encrypt_file(file_name, key_dir)
-            self.selected_key.config(text="No Key selected")
-            self.file_selected.config(text="No file selected")
+        try:
+            if file_name and key_dir:
+                encryptor.encrypt_file(file_name, key_dir)
+                self.selected_key.config(text="No Key selected")
+                self.file_selected.config(text="No file selected")
 
-    # Calls the encrypt function outside of init
+        except key_dir is None:
+            print('select a file')
+    # Calls the decrypt function outside of init
     def start_decrypt(self, file_name, key_dir):
         if file_name and key_dir:
             try:
