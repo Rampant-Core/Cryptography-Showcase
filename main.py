@@ -3,6 +3,7 @@ from tkinter import filedialog
 from ttkbootstrap.dialogs import Messagebox
 import locker as locker
 from PIL import Image, ImageTk
+from caesar import caesar_cipher
 
 encryptor = locker.Cs404_locker()  # Calls an instance of the 404 locker class
 """
@@ -34,6 +35,8 @@ class locker_404:
         self.selected_key_label = None
         self.file_to_decrypt = None
         self.caesar_shift = 0
+
+        
 
         # Creates the main frame for content
         frame = tk.Frame(root, width=800, height=400, borderwidth=2)
@@ -349,27 +352,27 @@ class locker_404:
         # Create a frame to hold both the Text widget and the Scrollbar
         text_frame = tk.Frame(caesar)
         text_frame.grid(row=4, column=0, sticky="nswe", padx=10, pady=10, columnspan=3)
-        # Create the Text widget
-        caesar_text_frame1 = tk.Text(
+        # Create the Input Text widget
+        self.caesar_text_frame1 = tk.Text(
             text_frame, wrap="word", width=83, height=12, font=("Helvetica", 12)
         )  # Adjust height for better fit
-        caesar_text_frame1.grid(row=0, column=0, sticky="nswe")
+        self.caesar_text_frame1.grid(row=0, column=0, sticky="nswe")
 
         # Create the Scrollbar and link it to the Text widget
         scrollbar = tk.Scrollbar(
-            text_frame, orient="vertical", command=caesar_text_frame1.yview
+            text_frame, orient="vertical", command=self.caesar_text_frame1.yview
         )
         scrollbar.grid(row=0, column=1, sticky="ns")
 
         # Configure the Text widget to use the Scrollbar
-        caesar_text_frame1.configure(yscrollcommand=scrollbar.set)
+        self.caesar_text_frame1.configure(yscrollcommand=scrollbar.set)
 
         # Make the text_frame grid expand as needed
         text_frame.grid_rowconfigure(0, weight=1)
         text_frame.grid_columnconfigure(0, weight=1)
 
         # Encrypt Button
-        caesar_button = tk.Button(caesar, text="Encrypt", command=None, style="danger")
+        caesar_button = tk.Button(caesar, text="Encrypt", command=self.caesar_call_encrypt, style="danger")
         caesar_button.grid(column=2, row=2, sticky="nswe", padx=10, pady=10)
 
         # Paste Button
@@ -414,23 +417,23 @@ class locker_404:
             row=1, column=0, sticky="nswe", padx=10, pady=10, columnspan=3
         )
         # Create the Text widget
-        caesar_text_frame2 = tk.Text(
+        self.caesar_text_frame2 = tk.Text(
             text_frame_out, wrap="word", width=83, height=15, font=("Helvetica", 12)
         )  # Adjust height for better fit
-        caesar_text_frame2.grid(row=1, column=0, sticky="nswe")
+        self.caesar_text_frame2.grid(row=1, column=0, sticky="nswe")
 
         # Create the Scrollbar and link it to the Text widget
         scrollbar2 = tk.Scrollbar(
-            text_frame_out, orient="vertical", command=caesar_text_frame2.yview
+            text_frame_out, orient="vertical", command=self.caesar_text_frame2.yview
         )
         scrollbar2.grid(row=1, column=1, sticky="ns")
 
         # Configure the Text widget to use the Scrollbar
-        caesar_text_frame2.configure(yscrollcommand=scrollbar.set)
+        self.caesar_text_frame2.configure(yscrollcommand=scrollbar.set, state="disabled")
 
         # Make the text_frame grid expand as needed
-        caesar_text_frame2.grid_rowconfigure(0, weight=1)
-        caesar_text_frame2.grid_columnconfigure(0, weight=1)
+        self.caesar_text_frame2.grid_rowconfigure(0, weight=1)
+        self.caesar_text_frame2.grid_columnconfigure(0, weight=1)
 
         # Copy Button
         caesar_button = tk.Button(caesar_out, text="Copy", command=None, style="danger")
@@ -553,6 +556,35 @@ class locker_404:
                     "Please check the checkbox", title="No checkbox error", alert=True
                 )
                 return
+            
+    """
+    Caesar cypher function
+    """
+    def caesar_encrypt(self, text, shift):
+        if text == "" or None:
+            Messagebox.show_error(
+                "Please enter some text", title="No text Error", alert=True
+            )
+            return
+        if shift == "0" or None:
+            Messagebox.show_error(
+                "Please select a shift value", title="No text shift Error", alert=True
+            )
+            return
+        if text and shift:
+            Messagebox.show_info(
+                "Text has been encrypted check out the other tab to see the output", title="Text encrypted!", alert=True
+            )
+            #caesar_cipher(text, shift) # update the text frame here with the output of the function
+            text_out = caesar_cipher(text, shift)
+            self.caesar_text_frame1.get(text_out)
+                
+
+    def caesar_call_encrypt(self): # Calls the encrypt function outside of the main loop
+        shift = round(float(self.caesar_shift))
+        text = self.caesar_text_frame1.get("1.0","end-1c")
+        shifted_text = self.caesar_encrypt(self, text, shift)
+        self.caesar_text_frame2.insert("1.0", text=shifted_text)
 
     """
     File functions

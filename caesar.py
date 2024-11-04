@@ -15,8 +15,9 @@ def caesar_cipher(text, shift):
     return encrypted_text
 
 
-# Example usage:
-text = "Hello, World!"
-shift = 7
-print("Original Text:", text)
-print("Encrypted Text:", caesar_cipher(text, shift))
+# # usage With text file
+# file = "text.txt"
+# text = open(file, "r")
+# for line in text:
+#     shift = 7
+#     print(caesar_cipher(line, shift))
