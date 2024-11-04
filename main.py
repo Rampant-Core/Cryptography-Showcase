@@ -1,7 +1,7 @@
 import ttkbootstrap as tk
 from tkinter import filedialog
 from ttkbootstrap.dialogs import Messagebox
-import locker
+import locker as locker
 from PIL import Image, ImageTk
 
 encryptor = locker.Cs404_locker()  # Calls an instance of the 404 locker class
@@ -72,7 +72,7 @@ class locker_404:
         text_frame_1.insert("1.0", tab_info_1)
         text_frame_1.config(state="disabled")
         # Image Display
-        image = Image.open("CS404.png")
+        image = Image.open("images/CS404.png")
         image = image.resize((159, 211), Image.LANCZOS)
         photo = ImageTk.PhotoImage(image)
         image_label = tk.Label(tab_frame_1, image=photo)
@@ -516,6 +516,6 @@ class locker_404:
                 print(f"error occured{e}")
 
 
-root = tk.Window(iconphoto="CS404.png", themename="darkly")  # This is the main window
+root = tk.Window(themename="darkly")  # This is the main window
 locker_404(root)  # This calls the window with the set parameters to the specific window
 root.mainloop()  # Runs the main loop function on the window allowing it to work.
