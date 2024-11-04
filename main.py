@@ -33,6 +33,7 @@ class locker_404:
         self.file_to_encrypt = None  # Selected file to encrypt in tab 3
         self.selected_key_label = None
         self.file_to_decrypt = None
+        self.caesar_shift = 0
 
         # Creates the main frame for content
         frame = tk.Frame(root, width=800, height=400, borderwidth=2)
@@ -44,11 +45,17 @@ class locker_404:
         tab2 = tk.Frame(tabControl)
         tab3 = tk.Frame(tabControl)
         tab4 = tk.Frame(tabControl)
+        tab5 = tk.Frame(tabControl)
+        tab6 = tk.Frame(tabControl)
+        tab9 = tk.Frame(tabControl)
         # Sets the name of the tab
         tabControl.add(tab1, text="Main")
         tabControl.add(tab2, text="Key Gen")
         tabControl.add(tab3, text="Encrypt")
         tabControl.add(tab4, text="Decrypt")
+        tabControl.add(tab5, text="Caesar Cypher")
+        tabControl.add(tab6, text="Cypher Output")
+        tabControl.add(tab9, text="About")
         """
         Tab 1 Begins here
         """
@@ -324,9 +331,114 @@ class locker_404:
         text_frame_4.insert("1.0", tab_info_4)
         text_frame_4.config(state="disabled")
 
-    """
-    Key make function
-    """
+        """
+        Tab 5 Caesar Cypher
+        """
+        # Tab 5 Frame
+        caesar = tk.Frame(tab5)
+        caesar.grid(row=0, column=0)
+        # Tab 5 Text Frame
+        caesar_frame = tk.Label(
+            caesar,
+            text="A Caesar Cypher, output in next tab.",
+            wraplength=600,
+            font=("Helvetica", 18),
+        )
+        caesar_frame.grid(row=0, column=0, sticky="nsw", padx=10, pady=10)
+
+        # Create a frame to hold both the Text widget and the Scrollbar
+        text_frame = tk.Frame(caesar)
+        text_frame.grid(row=4, column=0, sticky="nswe", padx=10, pady=10, columnspan=3)
+        # Create the Text widget
+        caesar_text_frame1 = tk.Text(
+            text_frame, wrap="word", width=83, height=12, font=("Helvetica", 12)
+        )  # Adjust height for better fit
+        caesar_text_frame1.grid(row=0, column=0, sticky="nswe")
+
+        # Create the Scrollbar and link it to the Text widget
+        scrollbar = tk.Scrollbar(
+            text_frame, orient="vertical", command=caesar_text_frame1.yview
+        )
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        # Configure the Text widget to use the Scrollbar
+        caesar_text_frame1.configure(yscrollcommand=scrollbar.set)
+
+        # Make the text_frame grid expand as needed
+        text_frame.grid_rowconfigure(0, weight=1)
+        text_frame.grid_columnconfigure(0, weight=1)
+
+        # Encrypt Button
+        caesar_button = tk.Button(caesar, text="Encrypt", command=None, style="danger")
+        caesar_button.grid(column=2, row=2, sticky="nswe", padx=10, pady=10)
+
+        # Paste Button
+        caesar_button = tk.Button(caesar, text="Paste", command=None, style="danger")
+        caesar_button.grid(column=1, row=0, sticky="nswe", padx=10, pady=10)
+
+        # Clear Button
+        caesar_button = tk.Button(caesar, text="Clear", command=None, style="danger")
+        caesar_button.grid(column=2, row=0, sticky="nswe", padx=10, pady=10)
+
+        # Function to update the label with the current scale value
+        def update_label(value):
+            value_label.config(text=f"Shift Value: {int(float(value))}")
+            self.caesar_shift = value  # Check this later -----------------------------------------------------------------------------------------------------------------------------------
+
+        scale = tk.Scale(
+            caesar, from_=0, to=26, length=300, bootstyle="danger", command=update_label
+        )  # Adjust bootstyle as needed
+        scale.grid(column=0, row=1)
+
+        value_label = tk.Label(caesar, text="Value: 0", font=("Helvetica", 16))
+        value_label.grid(row=2, column=0)
+
+        """
+        Tab 6 Caesar Output
+        """
+        # Tab 6 Frame
+        caesar_out = tk.Frame(tab6)
+        caesar_out.grid(row=0, column=0)
+        # Tab 6 Text Frame
+        caesar_out_frame = tk.Label(
+            caesar_out,
+            text="Output of Caesar Cypher.",
+            wraplength=600,
+            font=("Helvetica", 18),
+        )
+        caesar_out_frame.grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
+
+        # Create a frame to hold both the Text widget and the Scrollbar
+        text_frame_out = tk.Frame(caesar_out)
+        text_frame_out.grid(
+            row=1, column=0, sticky="nswe", padx=10, pady=10, columnspan=3
+        )
+        # Create the Text widget
+        caesar_text_frame2 = tk.Text(
+            text_frame_out, wrap="word", width=83, height=15, font=("Helvetica", 12)
+        )  # Adjust height for better fit
+        caesar_text_frame2.grid(row=1, column=0, sticky="nswe")
+
+        # Create the Scrollbar and link it to the Text widget
+        scrollbar2 = tk.Scrollbar(
+            text_frame_out, orient="vertical", command=caesar_text_frame2.yview
+        )
+        scrollbar2.grid(row=1, column=1, sticky="ns")
+
+        # Configure the Text widget to use the Scrollbar
+        caesar_text_frame2.configure(yscrollcommand=scrollbar.set)
+
+        # Make the text_frame grid expand as needed
+        caesar_text_frame2.grid_rowconfigure(0, weight=1)
+        caesar_text_frame2.grid_columnconfigure(0, weight=1)
+
+        # Copy Button
+        caesar_button = tk.Button(caesar_out, text="Copy", command=None, style="danger")
+        caesar_button.grid(column=1, row=0, sticky="nswe", padx=10, pady=10)
+
+        """
+        Key make function
+        """
 
     # def for button to make an encryption key
     # Needs two parameters for input, a filepath to place the key and a name for the key
