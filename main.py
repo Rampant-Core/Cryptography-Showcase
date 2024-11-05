@@ -35,6 +35,7 @@ class locker_404:
         self.selected_key_label = None
         self.file_to_decrypt = None
         self.caesar_shift = 0
+        self.text_out = ""
 
         
 
@@ -372,7 +373,7 @@ class locker_404:
         text_frame.grid_columnconfigure(0, weight=1)
 
         # Encrypt Button
-        caesar_button = tk.Button(caesar, text="Encrypt", command=self.caesar_call_encrypt, style="danger")
+        caesar_button = tk.Button(caesar, text="Encrypt", command=self.caesar_encrypt, style="danger")
         caesar_button.grid(column=2, row=2, sticky="nswe", padx=10, pady=10)
 
         # Paste Button
@@ -429,7 +430,7 @@ class locker_404:
         scrollbar2.grid(row=1, column=1, sticky="ns")
 
         # Configure the Text widget to use the Scrollbar
-        self.caesar_text_frame2.configure(yscrollcommand=scrollbar.set, state="disabled")
+        self.caesar_text_frame2.configure(yscrollcommand=scrollbar.set)
 
         # Make the text_frame grid expand as needed
         self.caesar_text_frame2.grid_rowconfigure(0, weight=1)
@@ -560,13 +561,15 @@ class locker_404:
     """
     Caesar cypher function
     """
-    def caesar_encrypt(self, text, shift):
+    def caesar_encrypt(self):
+        shift = round(float(self.caesar_shift))
+        text = self.caesar_text_frame1.get("1.0","end-1c")
         if text == "" or None:
             Messagebox.show_error(
                 "Please enter some text", title="No text Error", alert=True
             )
             return
-        if shift == "0" or None:
+        if shift == "0":
             Messagebox.show_error(
                 "Please select a shift value", title="No text shift Error", alert=True
             )
@@ -576,15 +579,10 @@ class locker_404:
                 "Text has been encrypted check out the other tab to see the output", title="Text encrypted!", alert=True
             )
             #caesar_cipher(text, shift) # update the text frame here with the output of the function
-            text_out = caesar_cipher(text, shift)
-            self.caesar_text_frame1.get(text_out)
-                
-
-    def caesar_call_encrypt(self): # Calls the encrypt function outside of the main loop
-        shift = round(float(self.caesar_shift))
-        text = self.caesar_text_frame1.get("1.0","end-1c")
-        shifted_text = self.caesar_encrypt(self, text, shift)
-        self.caesar_text_frame2.insert("1.0", text=shifted_text)
+            self.text_out = caesar_cipher(text, shift) 
+            self.caesar_text_frame2.insert("1.0",self.text_out)
+            self.caesar_text_frame2.update()
+            self.caesar_text_frame2.config(state='disabled')
 
     """
     File functions
