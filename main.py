@@ -37,8 +37,6 @@ class locker_404:
         self.caesar_shift = 0
         self.text_out = ""
 
-        
-
         # Creates the main frame for content
         frame = tk.Frame(root, width=800, height=400, borderwidth=2)
         frame.pack(expand=3, fill="both")
@@ -373,21 +371,25 @@ class locker_404:
         text_frame.grid_columnconfigure(0, weight=1)
 
         # Encrypt Button
-        caesar_button = tk.Button(caesar, text="Encrypt", command=self.caesar_encrypt, style="danger")
+        caesar_button = tk.Button(
+            caesar, text="Encrypt", command=self.caesar_encrypt, style="danger"
+        )
         caesar_button.grid(column=2, row=2, sticky="nswe", padx=10, pady=10)
 
         # Paste Button
-        caesar_button = tk.Button(caesar, text="Paste", command=None, style="danger")
+        caesar_button = tk.Button(
+            caesar, text="Paste", command=self.paste_text, style="danger"
+        )
         caesar_button.grid(column=1, row=0, sticky="nswe", padx=10, pady=10)
 
         # Clear Button
-        caesar_button = tk.Button(caesar, text="Clear", command=None, style="danger")
+        caesar_button = tk.Button(caesar, text="Clear", command=self.rm, style="danger")
         caesar_button.grid(column=2, row=0, sticky="nswe", padx=10, pady=10)
 
         # Function to update the label with the current scale value
         def update_label(value):
-            value_label.config(text=f"Shift Value: {int(float(value))}")
-            self.caesar_shift = value  # Check this later -----------------------------------------------------------------------------------------------------------------------------------
+            value_label.config(text=f"Shift Value: {int(round(float(value)))}")
+            self.caesar_shift = f"{int(round(float(value)))}"
 
         scale = tk.Scale(
             caesar, from_=0, to=26, length=300, bootstyle="danger", command=update_label
@@ -419,7 +421,11 @@ class locker_404:
         )
         # Create the Text widget
         self.caesar_text_frame2 = tk.Text(
-            text_frame_out, wrap="word", width=83, height=15, font=("Helvetica", 12)
+            text_frame_out,
+            wrap="word",
+            width=83,
+            height=15,
+            font=("Helvetica", 12),
         )  # Adjust height for better fit
         self.caesar_text_frame2.grid(row=1, column=0, sticky="nswe")
 
@@ -430,14 +436,17 @@ class locker_404:
         scrollbar2.grid(row=1, column=1, sticky="ns")
 
         # Configure the Text widget to use the Scrollbar
-        self.caesar_text_frame2.configure(yscrollcommand=scrollbar.set)
+        self.caesar_text_frame2.configure(yscrollcommand=scrollbar2.set)
+        self.caesar_text_frame2.configure(state="disabled")
 
         # Make the text_frame grid expand as needed
         self.caesar_text_frame2.grid_rowconfigure(0, weight=1)
         self.caesar_text_frame2.grid_columnconfigure(0, weight=1)
 
         # Copy Button
-        caesar_button = tk.Button(caesar_out, text="Copy", command=None, style="danger")
+        caesar_button = tk.Button(
+            caesar_out, text="Copy", command=self.copy_text, style="danger"
+        )
         caesar_button.grid(column=1, row=0, sticky="nswe", padx=10, pady=10)
 
         """
@@ -557,36 +566,45 @@ class locker_404:
                     "Please check the checkbox", title="No checkbox error", alert=True
                 )
                 return
-            
+
     """
     Caesar cypher function
     """
+
     def caesar_encrypt(self):
-        shift = round(float(self.caesar_shift))
-        text = self.caesar_text_frame1.get("1.0","end-1c")
+        self.caesar_text_frame2.delete("1.0", tk.END)
+        shift = int(self.caesar_shift)
+        text = self.caesar_text_frame1.get("1.0", "end-1c")
         if text == "" or None:
             Messagebox.show_error(
                 "Please enter some text", title="No text Error", alert=True
             )
             return
-        if shift == "0":
+        if shift == 0:
             Messagebox.show_error(
                 "Please select a shift value", title="No text shift Error", alert=True
             )
             return
         if text and shift:
+            # caesar_cipher(text, shift) # update the text frame here with the output of the function
+            self.text_out = caesar_cipher(text, shift)
+            self.caesar_text_frame2.delete("1.0", tk.END)
+            self.caesar_text_frame2.config(state="normal")
+            self.caesar_text_frame2.insert("1.0", self.text_out)
+            self.caesar_text_frame2.config(state="disabled")
             Messagebox.show_info(
-                "Text has been encrypted check out the other tab to see the output", title="Text encrypted!", alert=True
+                "Text has been encrypted check out the other tab to see the output",
+                title="Text encrypted!",
+                alert=True,
             )
-            #caesar_cipher(text, shift) # update the text frame here with the output of the function
-            self.text_out = caesar_cipher(text, shift) 
-            self.caesar_text_frame2.insert("1.0",self.text_out)
-            self.caesar_text_frame2.update()
-            self.caesar_text_frame2.config(state='disabled')
 
     """
     File functions
     """
+
+    # For clearing the Text frame
+    def rm(self):
+        self.caesar_text_frame1.delete("1.0", tk.END)
 
     # This is used to open the directory selection dialog and passes the filepath to the next function
     def open_file_dialog(self):
@@ -615,7 +633,45 @@ class locker_404:
             self.file_selected.config(text=file_selection)
 
     """
-    Decryption defs
+    Clipboard functions
+    """
+
+    def copy_text(self):
+        # Enable editing temporarily if the Text widget is disabled
+        self.caesar_text_frame2.config(state="normal")
+
+        # Get the text from the Text widget
+        text = self.caesar_text_frame2.get(
+            "1.0", "end-1c"
+        )  # Fetch text up to the last character
+
+        # Clear and set clipboard content
+        root.clipboard_clear()  # Clear the clipboard
+        root.clipboard_append(text)  # Append new text to the clipboard
+
+        # Show a message that text was copied
+        Messagebox.show_info("Text copied to clipboard!", title="Success", alert=True)
+
+        # Return the Text widget to disabled state if needed
+        self.caesar_text_frame2.config(state="disabled")
+
+    def paste_text(self):
+        try:
+            # Get text from the clipboard
+            clipboard_text = root.clipboard_get()
+
+            # Insert clipboard text at the current cursor position
+            self.caesar_text_frame1.insert(tk.INSERT, clipboard_text)
+        except tk.TclError:
+            # Handle case where clipboard is empty or contains non-text data
+            Messagebox.show_error(
+                "Clipboard is empty or contains non-text data.",
+                title="Clipboard error",
+                alert=True,
+            )
+
+    """
+    Decryption functions
     """
 
     # This will be used to load a key in for decryption
