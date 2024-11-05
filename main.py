@@ -7,10 +7,10 @@ from caesar import caesar_cipher
 
 encryptor = locker.Cs404_locker()  # Calls an instance of the 404 locker class
 """
-TODO add Caesar Cypher tab
 TODO add Cypher scrambler tab for text files
-TODO Fix tab 2 to make it prettier
-TODO make labels clear after job is executed
+TODO add hashing function
+TODO add hash compare
+TODO add hashing for files
 """
 
 
