@@ -396,7 +396,7 @@ class locker_404:
         )  # Adjust bootstyle as needed
         scale.grid(column=0, row=1)
 
-        value_label = tk.Label(caesar, text="Value: 0", font=("Helvetica", 16))
+        value_label = tk.Label(caesar, text="Shift Value: 0", font=("Helvetica", 16))
         value_label.grid(row=2, column=0)
 
         """
@@ -588,8 +588,8 @@ class locker_404:
         if text and shift:
             # caesar_cipher(text, shift) # update the text frame here with the output of the function
             self.text_out = caesar_cipher(text, shift)
-            self.caesar_text_frame2.delete("1.0", tk.END)
             self.caesar_text_frame2.config(state="normal")
+            self.caesar_text_frame2.delete("1.0", tk.END)
             self.caesar_text_frame2.insert("1.0", self.text_out)
             self.caesar_text_frame2.config(state="disabled")
             Messagebox.show_info(
